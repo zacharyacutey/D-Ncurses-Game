@@ -14,28 +14,28 @@ abstract class Position { //An abstract class that represents a position
     this.x = x;
     this.y = y;
   }
-  int getX() {
+  public int getX() {
     return this.x;
   }
-  void setX(int x) {
+  public void setX(int x) {
     this.x = x;
   }
-  int getY() {
+  public int getY() {
     return this.y;
   }
-  void setY(int y) {
+  public void setY(int y) {
     return this.y;
   }
-  void moveLeft() {
+  public void moveLeft() {
     this.x -= 1;
   }
-  void moveRight() {
+  public void moveRight() {
     this.x += 1;
   }
-  void moveUp() {
+  public void moveUp() {
     this.y -= 1; //Weird co-ordinate system that ncurses uses. (0,0) is at the top left.
   }
-  void moveDown() {
+  public void moveDown() {
     this.y += 1;
   }
 }
