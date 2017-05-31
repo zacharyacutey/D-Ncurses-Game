@@ -69,7 +69,7 @@ class InputHandler { }
 class Game { }
 
 /*
-TODO: actually code InputHandler Game
+TODO: actually code the InputHandler and Game classes.
 */
 
 void main() {
