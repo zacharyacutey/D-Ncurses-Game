@@ -1,2 +1,4 @@
 # D-Ncurses-Game
-A game using Curses &amp; GDC.
+A game using NCurses &amp; GDC.
+
+Uses the fact of gdc's relation to gcc.
