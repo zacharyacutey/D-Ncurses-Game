@@ -64,6 +64,14 @@ class Player : Position, Drawable {
   }
 }
 
+class InputHandler { } 
+
+class Game { }
+
+/*
+TODO: actually code InputHandler Game
+*/
+
 void main() {
   WINDOW* w = initscr();
   start_color();
