@@ -1,1 +1,1 @@
-default: gdc main.d externals.d macros.d -lncurses
+default: gdc main.d externals.d macros.c -lncurses
