@@ -72,7 +72,7 @@ class Game { }
 TODO: actually code the InputHandler and Game classes.
 */
 
-void main() {
+void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
   WINDOW* w = initscr();
   start_color();
   noecho();
