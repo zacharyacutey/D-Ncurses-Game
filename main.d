@@ -2,6 +2,7 @@
 
 
 import externals;
+import std.string;
 
 interface Drawable { //An interface that represents a drawable object.
   public void draw();
@@ -10,10 +11,6 @@ interface Drawable { //An interface that represents a drawable object.
 abstract class Position { //An abstract class that represents a position
   private int x;
   private int y;
-  this(int x,int y) {
-    this.x = x;
-    this.y = y;
-  }
   public int getX() {
     return this.x;
   }
@@ -24,7 +21,7 @@ abstract class Position { //An abstract class that represents a position
     return this.y;
   }
   public void setY(int y) {
-    return this.y;
+    this.y = y;
   }
   public void moveLeft() {
     this.x -= 1;
@@ -44,6 +41,10 @@ abstract class Position { //An abstract class that represents a position
 }
 
 class Obstacle : Position, Drawable {
+  this(int x,int y) {
+    this.x = x;
+    this.y = y;
+  }
   public void draw() {
     attr_on(color_pair(1)); //Turn color on.
     mvaddstr(this.getY(),this.getX(),std.string.toStringz(" ")); //Draw.
@@ -52,6 +53,10 @@ class Obstacle : Position, Drawable {
 }
 
 class Player : Position, Drawable {
+  this(int x,int y) {
+    this.x = x;
+    this.y = y;
+  }
   public void draw() {
     attr_on(color_pair(2)); //Turn color on.
     mvaddstr(this.getY(),this.getX(),std.string.toStringz("o")); //Draw.
@@ -62,14 +67,20 @@ class Player : Position, Drawable {
 void main() {
   WINDOW* w = initscr();
   start_color();
+  noecho();
   curs_set(0);
   init_pair(short(1),short(0),short(1)); //Foreground := Black, Background := Red - Obstacle
   init_pair(short(2),short(1),short(0)); //Foreground := Red, Background :- Black - Player
   wresize(w,20,20);
   Obstacle o = new Obstacle(2,2);
   Player p = new Player(3,3);
+  o.draw();
+  p.draw();
   getch();
   p.moveLeft();
+  getch();
+  o.draw();
+  p.draw();
   getch();
   endwin();
 }
