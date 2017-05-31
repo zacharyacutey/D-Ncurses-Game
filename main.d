@@ -38,7 +38,7 @@ abstract class Position { //An abstract class that represents a position
   public void moveDown() {
     this.y += 1;
   }
-  public boolean opEquals(Position rhs) {
+  public bool opEquals(Position rhs) {
     return this.getX() == rhs.getX() && this.getY() == rhs.getY();
   }
 }
@@ -46,28 +46,28 @@ abstract class Position { //An abstract class that represents a position
 class Obstacle : Position, Drawable {
   public void draw() {
     attr_on(color_pair(1)); //Turn color on.
-		mvaddstr(this.getY(),this.getX(),std.string.toStringz(" ")); //Draw.
-		attr_off(color_pair(1)); //Turn color off.
+    mvaddstr(this.getY(),this.getX(),std.string.toStringz(" ")); //Draw.
+    attr_off(color_pair(1)); //Turn color off.
   }
 }
 
 class Player : Position, Drawable {
   public void draw() {
     attr_on(color_pair(2)); //Turn color on.
-		mvaddstr(this.getY(),this.getX(),std.string.toStringz("o")); //Draw.
-		attr_off(color_pair(2)); //Turn color off.
+    mvaddstr(this.getY(),this.getX(),std.string.toStringz("o")); //Draw.
+    attr_off(color_pair(2)); //Turn color off.
   }
 }
 
 void main() {
   WINDOW* w = initscr();
-	start_color();
-	curs_set(0);
+  start_color();
+  curs_set(0);
   init_pair(short(1),short(0),short(1)); //Foreground := Black, Background := Red - Obstacle
-	init_pair(short(2),short(1),short(0)); //Foreground := Red, Background :- Black - Player
-	wresize(w,20,20);
-	Obstacle o = new Obstacle(2,2);
-	Player p = new Player(3,3);
+  init_pair(short(2),short(1),short(0)); //Foreground := Red, Background :- Black - Player
+  wresize(w,20,20);
+  Obstacle o = new Obstacle(2,2);
+  Player p = new Player(3,3);
   getch();
   p.moveLeft();
   getch();
