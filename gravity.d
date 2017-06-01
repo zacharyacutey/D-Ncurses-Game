@@ -266,6 +266,22 @@ class Game {
     this.setGravityDirection(this.gravity[0]);
     this.gravity = this.gravity[1 .. $];
   }
+  public bool shouldFall() {
+    if(this.getGravityDirection() == Gravity.NONE) {
+      return false;
+    } else if(this.getGravityDirection() == Gravity.DOWN) {
+      if(this.player.getY() == this.getWidth() - 2) {
+        return false;
+      } else {
+        for(int i = 0;i < this.obstacles.length;i++) {
+          if(this.player.getX() == this.obstacles[i].getX() && this.player.getY() + 1 == this.obstacles[i].getY()) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
   public void play() {
     WINDOW* w = initscr();
     start_color();
@@ -283,6 +299,7 @@ class Game {
     this.doGravity();
     while(this.inputHandler.handleInputX() && this.uncollided()) {
       this.doGravity();
+      this.inputHandler.setFalling(this.shouldFall());
       box(w,0,0);
       this.clearObstacles();
       this.doHints();
@@ -385,5 +402,6 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
     g.addTurn([new VerticalLaser(1,i)]);
   }
   g.addTurn([new HorizontalLaser(1,2)],Gravity.DOWN);
+  g.addTurn([new HorizontalLaser(9,5)]);
   g.play();
 }
