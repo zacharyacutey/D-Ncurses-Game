@@ -174,6 +174,11 @@ class Game {
         tmp ~= this.turns[0][i];
       }
     }
+    if(this.turns.length > 1) {
+      for(int i = 0;i < this.turns[1].length;i++) {
+        this.turns[1][i].warn();
+      }
+    }
     if(this.turns.length == 1) {
       this.turns = [tmp];
     } else if(this.turns.length == 2) {
@@ -190,6 +195,11 @@ class Game {
     init_pair(short(1),short(0),short(1)); //Foreground := Black, Background := Red - Obstacle
     init_pair(short(2),short(1),short(0)); //Foreground := Red, Background := Black - Player
     wresize(w,this.height,this.width);
+    box(w,0,0);
+    this.clearObstacles();
+    this.doHints();
+    this.drawObstacles();
+    this.player.draw();
     while(this.inputHandler.handleInput() && this.uncollided()) {
       box(w,0,0);
       this.clearObstacles();
@@ -199,9 +209,11 @@ class Game {
     endwin();
   }
 }
+
 interface Hint : Drawable {
   public void update(Game g); //Updates the hint, and adds obstacles to the Game g.
   public int getDurability();
+  public void warn();
 }
 
 
@@ -225,6 +237,9 @@ class HorizontalLaser : Hint {
     this.durability -= 1;
     this.draw();
   }
+  public void warn() {
+    mvaddstr(this.y,0,std.string.toStringz("!"));
+  }
 }
 
 class VerticalLaser : Hint {
@@ -246,6 +261,9 @@ class VerticalLaser : Hint {
     }
     this.durability -= 1;
     this.draw();
+  }
+  public void warn() {
+    mvaddstr(0,this.x,std.string.toStringz("!"));
   }
 }
 
