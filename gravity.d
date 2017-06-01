@@ -85,10 +85,24 @@ class InputHandler {
   private Player player; //I have to use player, since it has the draw method.
   private int width;
   private int height;
+  private bool falling = true;
+  private char prev; //(Used for falling and stuff).
   this(Player player,int width,int height) {
     this.player = player;
     this.width = width;
     this.height = height;
+  }
+  public Gravity getGravityDirection() {
+    return this.player.getGravityDirection();
+  }
+  public void setGravityDirection(Gravity d) {
+    this.player.setGravityDirection(d);
+  }
+  public bool getFalling() {
+    return this.falling;
+  }
+  public void setFalling(bool falling) {
+    this.falling = falling;
   }
   public void moveLeft() {
     this.player.moveLeft();
@@ -114,25 +128,48 @@ class InputHandler {
       this.player.setY(this.height - 2);
     }
   }
-  public bool handleInput() {
+  public bool handleInputX() {
     int u = getch();
     char c = cast(char)u;
+    this.prev = c;
     if(c == 'a') {
       this.moveLeft();
     } else if(c == 'd') {
       this.moveRight();
-    } else if(c == 'w') {
+    }/* else if(c == 'w') {
       this.moveUp();
     } else if(c == 's') {
       this.moveDown();
-    } else if(u == 3) {
+    } */else if(u == 3) {
       return false;
-    } else {
+    }/* else {
       return this.handleInput();
-    }
+    }*/
+    
     clear(); //Hacky, sort of
-    this.player.draw();
+//    this.player.draw();
     return true;
+  }
+  public bool handleInputY() {
+    if(this.getGravityDirection() == Gravity.NONE) {
+      if(this.prev == 'w') {
+        this.moveUp();
+      } else if(this.prev == 's') {
+        this.moveDown();
+      } else if(this.prev == '\x03') {
+        return false;
+      }
+      return true;
+    } else {
+      if(this.prev == '\x03') {
+        return false; 
+      } else if(this.falling) {
+        this.moveDown();
+      } else if(this.prev == 'w') {
+        this.moveUp();
+      }
+      return true;
+    }
   }
 }
 
@@ -244,11 +281,14 @@ class Game {
     this.drawObstacles();
     this.player.draw();
     this.doGravity();
-    while(this.inputHandler.handleInput() && this.uncollided()) {
+    while(this.inputHandler.handleInputX() && this.uncollided()) {
       this.doGravity();
       box(w,0,0);
       this.clearObstacles();
       this.doHints();
+//      if(!this.uncollided()) break;
+      this.inputHandler.handleInputY();
+      this.player.draw();
       if(!this.uncollided()) break;
       this.drawObstacles();
     }
