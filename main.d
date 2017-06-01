@@ -204,6 +204,7 @@ class Game {
       box(w,0,0);
       this.clearObstacles();
       this.doHints();
+      if(!this.uncollided()) break;
       this.drawObstacles();
     }
     endwin();
@@ -269,10 +270,20 @@ class VerticalLaser : Hint {
 
 
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
-  Player p = new Player(3,3);
+  Player p = new Player(1,1);
   Game g = new Game(p,20,20);
-  g.addTurn([cast(Hint)new HorizontalLaser(9,6),cast(Hint)new VerticalLaser(5,8)]);
-  g.addTurn([cast(Hint)new HorizontalLaser(9,7),cast(Hint)new VerticalLaser(6,9)]);
-  g.addTurn([cast(Hint)new HorizontalLaser(9,8),cast(Hint)new VerticalLaser(7,10)]);
+  g.addTurn([]);
+  for(int i = 1;i < 18;i++) {
+    g.addTurn([new VerticalLaser(10,i)]);
+  }
+  for(int i = 1;i < 18;i++) {
+    g.addTurn([new HorizontalLaser(10,i)]);
+  }
+  for(int i = 18;i > 1;i--) {
+    g.addTurn([new VerticalLaser(10,i)]);
+  }
+  for(int i = 18;i > 1;i--) {
+    g.addTurn([new HorizontalLaser(10,i)]);
+  }
   g.play();
 }
