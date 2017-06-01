@@ -66,36 +66,36 @@ class Player : Position, Drawable {
 }
 
 class InputHandler {
-  private Player position; //I have to use player, since it has the draw method.
+  private Player player; //I have to use player, since it has the draw method.
   private int width;
   private int height;
-  this(Player position,int width,int height) {
-    this.position = position;
+  this(Player player,int width,int height) {
+    this.player = player;
     this.width = width;
     this.height = height;
   }
   public void moveLeft() {
-    this.position.moveLeft();
-    if(this.position.getX() < 1) {
-      this.position.setX(1);
+    this.player.moveLeft();
+    if(this.player.getX() < 1) {
+      this.player.setX(1);
     }
   }
   public void moveRight() {
-    this.position.moveRight();
-    if(this.position.getX() >= this.width - 1) {
-      this.position.setX(this.width - 2);
+    this.player.moveRight();
+    if(this.player.getX() >= this.width - 1) {
+      this.player.setX(this.width - 2);
     }
   }
   public void moveUp() {
-    this.position.moveUp();
-    if(this.position.getY() < 1) {
-      this.position.setY(1);
+    this.player.moveUp();
+    if(this.player.getY() < 1) {
+      this.player.setY(1);
     }
   }
   public void moveDown() {
-    this.position.moveDown();
-    if(this.position.getY() >= this.height - 1) {
-      this.position.setY(this.height - 2);
+    this.player.moveDown();
+    if(this.player.getY() >= this.height - 1) {
+      this.player.setY(this.height - 2);
     }
   }
   public bool handleInput() {
@@ -113,7 +113,7 @@ class InputHandler {
       return false;
     }
     clear(); //Hacky, sort of
-    this.position.draw();
+    this.player.draw();
     return true;
   }
 }
