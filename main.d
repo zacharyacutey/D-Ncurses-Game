@@ -124,14 +124,14 @@ class Game {
   private int height;
   private Obstacle[] obstacles;
   private InputHandler inputHandler;
-  private Hint[] hints;
+  private Hint[][] turns;
   this(Player player,int width,int height) {
     this.player = player;
     this.width = width;
     this.height = height;
     this.obstacles = [];
     this.inputHandler = new InputHandler(player,width,height);
-    this.hints = [];
+    this.turns = [];
   }
   public int getWidth() {
     return this.width;
@@ -158,19 +158,19 @@ class Game {
       this.obstacles[i].draw();
     }
   }
-  public void addHint(Hint h) {
-    this.hints ~= h;
+  public void addTurn(Hint[] h) {
+    this.turns ~= h;
   }
   public void doHints() {
     Hint[] tmp;
-    for(int i = 0;i < this.hints.length;i++) {
-      if(hints[i].getDurability() != 0) {
-        this.hints[i].update(this);
-        this.hints[i].draw();
-        tmp ~= this.hints[i];
+    for(int i = 0;i < this.turns[0].length;i++) {
+      if(this.turns[0][i].getDurability() != 0) {
+        this.turns[0][i].update(this);
+        this.turns[0][i].draw();
+        tmp ~= this.turns[0][i];
       }
     }
-    this.hints = tmp;
+    this.turns = [tmp];
   }
   public void play() {
     WINDOW* w = initscr();
@@ -244,8 +244,6 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
   Obstacle o = new Obstacle(4,4);
   Player p = new Player(3,3);
   Game g = new Game(p,20,20);
-  g.addHint(new HorizontalLaser(9,6));
-  g.addHint(new VerticalLaser(5,8));
-  g.addObstacle(o);
+  g.addTurn([cast(Hint)new HorizontalLaser(9,6),cast(Hint)new VerticalLaser(5,8)]);
   g.play();
 }
