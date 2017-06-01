@@ -65,10 +65,10 @@ class Player : Position, Drawable {
 }
 
 class InputHandler {
-  private Position position;
+  private Player position; //I have to use player, since it has the draw method.
   private int width;
   private int height;
-  this(Position position,int width,int height) {
+  this(Player position,int width,int height) {
     this.position = position;
     this.width = width;
     this.height = height;
@@ -111,6 +111,7 @@ class InputHandler {
     } else if(u == 3) {
       return false;
     }
+    clear(); //Hacky, sort of
     this.position.draw();
     return true;
   }
