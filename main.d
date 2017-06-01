@@ -2,6 +2,7 @@
 
 
 import externals;
+import std.stdio;
 import std.string;
 import std.conv;
 
@@ -298,5 +299,8 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
   g.addTurn([new VerticalLaser(10,1),new VerticalLaser(10,2)]);
   g.addTurn([new HorizontalLaser(10,3),new HorizontalLaser(10,4),new HorizontalLaser(10,5)]);
   g.addTurn([cast(Hint)new VerticalLaser(1,4),cast(Hint)new VerticalLaser(1,3)]);
+  for(int i = 5;i<18;i++) {
+    g.addTurn([new VerticalLaser(1,i)]);
+  }
   g.play();
 }
