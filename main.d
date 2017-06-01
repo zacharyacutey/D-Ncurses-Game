@@ -64,12 +64,62 @@ class Player : Position, Drawable {
   }
 }
 
-class InputHandler { } 
+class InputHandler {
+  private Position position;
+  private int width;
+  private int height;
+  this(Position position,int width,int height) {
+    this.position = position;
+    this.width = width;
+    this.height = height;
+  }
+  public void moveLeft() {
+    this.position.moveLeft();
+    if(this.position.getX() < 0) {
+      this.position.setX(0);
+    }
+  }
+  public void moveRight() {
+    this.position.moveRight();
+    if(this.position.getX() >= this.width) {
+      this.position.setX(this.width - 1);
+    }
+  }
+  public void moveUp() {
+    this.position.moveUp();
+    if(this.position.getY() < 0) {
+      this.position.setY(0);
+    }
+  }
+  public void moveDown() {
+    this.position.moveDown();
+    if(this.position.getY() >= this.height) {
+      this.position.setY(this.height - 1);
+    }
+  }
+  public bool handleInput() {
+    int u = getch();
+    char c = cast(char)u;
+    if(c == 'a') {
+      this.moveLeft();
+    } else if(c == 'd') {
+      this.moveRight();
+    } else if(c == 'w') {
+      this.moveUp();
+    } else if(c == 's') {
+      this.moveDown();
+    } else if(u == 3) {
+      return false;
+    }
+    this.position.draw();
+    return true;
+  }
+}
 
 class Game { }
 
 /*
-TODO: actually code the InputHandler and Game classes.
+TODO: actually code the Game class.
 */
 
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
@@ -82,13 +132,9 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
   wresize(w,20,20);
   Obstacle o = new Obstacle(2,2);
   Player p = new Player(3,3);
-  o.draw();
-  p.draw();
-  getch();
-  p.moveLeft();
-  getch();
-  o.draw();
-  p.draw();
-  getch();
+  InputHandler inh = new InputHandler(p,20,20);
+  while(inh.handleInput()) {
+    o.draw();
+  }
   endwin();
 }
