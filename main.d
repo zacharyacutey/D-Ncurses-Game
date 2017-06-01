@@ -161,10 +161,6 @@ class Game {
   }
 }
 
-/*
-TODO: actually code the Game class.
-*/
-
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
 
   Obstacle o = new Obstacle(2,2);
