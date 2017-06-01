@@ -444,13 +444,34 @@ class HorizontalLaser : Hint {
     this.draw();
   }
 }
-
+class VerticalLaser : Hint {
+  private int durability;
+  private int x;
+  this(int durability,int x) {
+    this.durability = durability;
+    this.x = x;
+  }
+  public int getDurability() {
+    return this.durability;
+  }
+  public void draw() {
+    mvaddstr(0,this.x,std.string.toStringz(to!string(this.durability)));
+  }
+  public void update(Game g) {
+    for(int y = 1;y < g.getHeight()-1;y++) {
+      g.addObstacle(new Obstacle(this.x,y));
+    }
+    this.durability -= 1;
+    this.draw();
+  }
+}
 
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
   Obstacle o = new Obstacle(4,4);
   Player p = new Player(3,3);
   Game g = new Game(p,20,20);
   g.addHint(new HorizontalLaser(9,6));
+  
   g.addObstacle(o);
   g.play();
 }
