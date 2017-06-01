@@ -162,6 +162,10 @@ class Game {
     this.turns ~= h;
   }
   public void doHints() {
+    if(turns.length == 0) {
+      return;
+    }
+      
     Hint[] tmp;
     for(int i = 0;i < this.turns[0].length;i++) {
       if(this.turns[0][i].getDurability() != 0) {
@@ -170,7 +174,13 @@ class Game {
         tmp ~= this.turns[0][i];
       }
     }
-    this.turns = [tmp];
+    if(this.turns.length == 1) {
+      this.turns = [tmp];
+    } else if(this.turns.length == 2) {
+      this.turns = [tmp~this.turns[1]];
+    } else {
+      this.turns = [tmp~this.turns[1]]~this.turns[2 .. $];
+    }
   }
   public void play() {
     WINDOW* w = initscr();
@@ -241,9 +251,10 @@ class VerticalLaser : Hint {
 
 
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
-  Obstacle o = new Obstacle(4,4);
   Player p = new Player(3,3);
   Game g = new Game(p,20,20);
   g.addTurn([cast(Hint)new HorizontalLaser(9,6),cast(Hint)new VerticalLaser(5,8)]);
+  g.addTurn([cast(Hint)new HorizontalLaser(9,7),cast(Hint)new VerticalLaser(6,9)]);
+  g.addTurn([cast(Hint)new HorizontalLaser(9,8),cast(Hint)new VerticalLaser(7,10)]);
   g.play();
 }
