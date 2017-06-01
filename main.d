@@ -75,26 +75,26 @@ class InputHandler {
   }
   public void moveLeft() {
     this.position.moveLeft();
-    if(this.position.getX() < 0) {
-      this.position.setX(0);
+    if(this.position.getX() < 1) {
+      this.position.setX(1);
     }
   }
   public void moveRight() {
     this.position.moveRight();
-    if(this.position.getX() >= this.width) {
-      this.position.setX(this.width - 1);
+    if(this.position.getX() >= this.width - 1) {
+      this.position.setX(this.width - 2);
     }
   }
   public void moveUp() {
     this.position.moveUp();
-    if(this.position.getY() < 0) {
-      this.position.setY(0);
+    if(this.position.getY() < 1) {
+      this.position.setY(1);
     }
   }
   public void moveDown() {
     this.position.moveDown();
-    if(this.position.getY() >= this.height) {
-      this.position.setY(this.height - 1);
+    if(this.position.getY() >= this.height - 1) {
+      this.position.setY(this.height - 2);
     }
   }
   public bool handleInput() {
@@ -155,6 +155,7 @@ class Game {
     init_pair(short(2),short(1),short(0)); //Foreground := Red, Background :- Black - Player
     wresize(w,this.height,this.width);
     while(this.inputHandler.handleInput() && this.uncollided()) {
+      box(w,0,0);
       this.drawObstacles();
     }
     endwin();
@@ -163,7 +164,7 @@ class Game {
 
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
 
-  Obstacle o = new Obstacle(2,2);
+  Obstacle o = new Obstacle(4,4);
   Player p = new Player(3,3);
   Game g = new Game(p,20,20);
   g.addObstacle(o);
