@@ -6,7 +6,8 @@ import std.stdio;
 import std.string;
 import std.conv;
 
-enum Gravity { NONE, DOWN }
+enum Gravity { NONE, DOWN , UP}
+Game g; //Only for the purpose of the old test level.
 
 interface Drawable { //An interface that represents a drawable object.
   public void draw();
@@ -77,6 +78,10 @@ class Player : Position, Drawable {
       attr_on(color_pair(3));
       mvaddstr(this.getY(),this.getX(),std.string.toStringz("v"));
       attr_off(color_pair(3));
+    } else if(this.gravityDirection == Gravity.UP) {
+      attr_on(color_pair(3));
+      mvaddstr(this.getY(),this.getX(),std.string.toStringz("^"));
+      attr_off(color_pair(3));
     }
   }
 }
@@ -136,15 +141,11 @@ class InputHandler {
       this.moveLeft();
     } else if(c == 'd') {
       this.moveRight();
-    }/* else if(c == 'w') {
-      this.moveUp();
-    } else if(c == 's') {
-      this.moveDown();
-    } */else if(u == 3) {
+    } else if(u == 3) {
       return false;
-    }/* else {
-      return this.handleInput();
-    }*/
+    } else if(!(u == 'w' || u == 's')) {
+      return handleInputX();
+    }
     
     clear(); //Hacky, sort of
 //    this.player.draw();
@@ -160,13 +161,22 @@ class InputHandler {
         return false;
       }
       return true;
-    } else {
+    } else if(this.getGravityDirection() == Gravity.DOWN) {
       if(this.prev == '\x03') {
         return false; 
       } else if(this.falling) {
         this.moveDown();
       } else if(this.prev == 'w') {
         this.moveUp();
+      }
+      return true;
+    } else {
+      if(this.prev == '\x03') {
+        return false;
+      } else if(this.falling) {
+        this.moveUp();
+      } else if(this.prev == 's') {
+        this.moveDown();
       }
       return true;
     }
@@ -279,6 +289,16 @@ class Game {
           }
         }
       }
+    } else if(this.getGravityDirection() == Gravity.UP) {
+      if(this.player.getY() == 1) {
+        return false;
+      } else {
+        for(int i = 0;i < this.obstacles.length;i++) {
+          if(this.player.getX() == this.obstacles[i].getX() && this.player.getY() - 1 == this.obstacles[i].getY()) {
+            return false;
+          }
+        }
+      }
     }
     return true;
   }
@@ -370,10 +390,19 @@ class VerticalLaser : Hint {
   }
 }
 
-
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
-  Player p = new Player(1,1);
+  Player p = new Player(2,1);
   Game g = new Game(p,20,20);
+  g.addTurn([new VerticalLaser(1,1)],Gravity.DOWN);
+  for(int i = 0;i < 17;i++) {
+    g.addTurn([new VerticalLaser(1,1)]);
+  }
+  g.addTurn([new HorizontalLaser(1,18)],Gravity.UP);
+  g.play();
+}
+
+
+void oldTest() {
   g.addTurn([]);
   for(int i = 1;i < 18;i++) {
     g.addTurn([new VerticalLaser(10,i)]);
@@ -402,6 +431,8 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
     g.addTurn([new VerticalLaser(1,i)]);
   }
   g.addTurn([new HorizontalLaser(1,2)],Gravity.DOWN);
-  g.addTurn([new HorizontalLaser(9,5)]);
-  g.play();
+  g.addTurn([new HorizontalLaser(2,5)]);
+  g.addTurn([new VerticalLaser(1,1)]);
+  g.addTurn([new HorizontalLaser(1,4)]);
+  g.addTurn([new HorizontalLaser(1,3)]);
 }
