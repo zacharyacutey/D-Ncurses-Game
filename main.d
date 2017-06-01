@@ -117,25 +117,59 @@ class InputHandler {
   }
 }
 
-class Game { }
+class Game { 
+  private Player player;
+  private int width;
+  private int height;
+  private Obstacle[] obstacles;
+  private InputHandler inputHandler;
+  this(Player player,int width,int height) {
+    this.player = player;
+    this.width = width;
+    this.height = height;
+    this.obstacles = [];
+    this.inputHandler = new InputHandler(player,width,height);
+  }
+  public void addObstacle(Obstacle o) {
+    this.obstacles ~= o;
+  }
+  public bool uncollided() {
+    for(int i = 0;i < this.obstacles.length;i++) {
+      if(this.obstacles[i].getX() == this.player.getX() && this.obstacles[i].getY() == this.player.getY()) {
+        return false;
+      }
+    }
+    return true;
+  }
+  public void drawObstacles() {
+    for(int i = 0;i < this.obstacles.length;i++) {
+      this.obstacles[i].draw();
+    }
+  }
+  public void play() {
+    WINDOW* w = initscr();
+    start_color();
+    noecho();
+    curs_set(0);
+    init_pair(short(1),short(0),short(1)); //Foreground := Black, Background := Red - Obstacle
+    init_pair(short(2),short(1),short(0)); //Foreground := Red, Background :- Black - Player
+    wresize(w,this.height,this.width);
+    while(this.inputHandler.handleInput() && this.uncollided()) {
+      this.drawObstacles();
+    }
+    endwin();
+  }
+}
 
 /*
 TODO: actually code the Game class.
 */
 
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
-  WINDOW* w = initscr();
-  start_color();
-  noecho();
-  curs_set(0);
-  init_pair(short(1),short(0),short(1)); //Foreground := Black, Background := Red - Obstacle
-  init_pair(short(2),short(1),short(0)); //Foreground := Red, Background :- Black - Player
-  wresize(w,20,20);
+
   Obstacle o = new Obstacle(2,2);
   Player p = new Player(3,3);
-  InputHandler inh = new InputHandler(p,20,20);
-  while(inh.handleInput()) {
-    o.draw();
-  }
-  endwin();
+  Game g = new Game(p,20,20);
+  g.addObstacle(o);
+  g.play();
 }
