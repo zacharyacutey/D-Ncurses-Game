@@ -6,6 +6,8 @@ import std.stdio;
 import std.string;
 import std.conv;
 
+enum Gravity { NONE, DOWN }
+
 interface Drawable { //An interface that represents a drawable object.
   public void draw();
 }
@@ -55,14 +57,27 @@ class Obstacle : Position, Drawable {
 }
 
 class Player : Position, Drawable {
+  private Gravity gravityDirection = Gravity.NONE;
   this(int x,int y) {
     this.x = x;
     this.y = y;
   }
+  public Gravity getGravityDirection() {
+    return this.gravityDirection;
+  }
+  public void setGravityDirection(Gravity dir) {
+    this.gravityDirection = dir;
+  }
   public void draw() {
-    attr_on(color_pair(2)); //Turn color on.
-    mvaddstr(this.getY(),this.getX(),std.string.toStringz("o")); //Draw.
-    attr_off(color_pair(2)); //Turn color off.
+    if(this.gravityDirection == Gravity.NONE) {
+      attr_on(color_pair(2)); //Turn color on.
+      mvaddstr(this.getY(),this.getX(),std.string.toStringz("o")); //Draw.
+      attr_off(color_pair(2)); //Turn color off.
+    } else if(this.gravityDirection == Gravity.DOWN) {
+      attr_on(color_pair(3));
+      mvaddstr(this.getY(),this.getX(),std.string.toStringz("v"));
+      attr_off(color_pair(3));
+    }
   }
 }
 
@@ -128,6 +143,7 @@ class Game {
   private Obstacle[] obstacles;
   private InputHandler inputHandler;
   private Hint[][] turns;
+  private Gravity[] gravity;
   this(Player player,int width,int height) {
     this.player = player;
     this.width = width;
@@ -135,6 +151,13 @@ class Game {
     this.obstacles = [];
     this.inputHandler = new InputHandler(player,width,height);
     this.turns = [];
+    this.gravity = [];
+  }
+  public Gravity getGravityDirection() {
+    return this.player.getGravityDirection();
+  }
+  public void setGravityDirection(Gravity gd) {
+    this.player.setGravityDirection(gd);
   }
   public int getWidth() {
     return this.width;
@@ -163,6 +186,15 @@ class Game {
   }
   public void addTurn(Hint[] h) {
     this.turns ~= h;
+    if(this.gravity.length == 0) {
+      this.gravity ~= Gravity.NONE;
+    } else {
+      this.gravity ~= this.gravity[$ - 1];
+    }    
+  }
+  public void addTurn(Hint[] h,Gravity d) {
+    this.turns ~= h;
+    this.gravity ~= d;
   }
   public void doHints() {
     if(turns.length == 0) {
@@ -190,6 +222,13 @@ class Game {
       this.turns = [tmp~this.turns[1]]~this.turns[2 .. $];
     }
   }
+  public void doGravity() {
+    if(this.gravity.length == 0) {
+      return;
+    }
+    this.setGravityDirection(this.gravity[0]);
+    this.gravity = this.gravity[1 .. $];
+  }
   public void play() {
     WINDOW* w = initscr();
     start_color();
@@ -197,13 +236,16 @@ class Game {
     curs_set(0);
     init_pair(short(1),short(0),short(1)); //Foreground := Black, Background := Red - Obstacle
     init_pair(short(2),short(1),short(0)); //Foreground := Red, Background := Black - Player
+    init_pair(short(3),short(4),short(0)); //Foreground := Blue, Background := Black - Gravity'd player
     wresize(w,this.height,this.width);
     box(w,0,0);
     this.clearObstacles();
     this.doHints();
     this.drawObstacles();
     this.player.draw();
+    this.doGravity();
     while(this.inputHandler.handleInput() && this.uncollided()) {
+      this.doGravity();
       box(w,0,0);
       this.clearObstacles();
       this.doHints();
@@ -302,5 +344,6 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
   for(int i = 5;i<18;i++) {
     g.addTurn([new VerticalLaser(1,i)]);
   }
+  g.addTurn([new HorizontalLaser(1,2)],Gravity.DOWN);
   g.play();
 }
