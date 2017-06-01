@@ -14,4 +14,5 @@ extern(C) {
 	void clear();
 	int noecho();
 	int curs_set(int);
+	int box(WINDOW*,int,int);
 }
