@@ -6,7 +6,7 @@ import std.stdio;
 import std.string;
 import std.conv;
 
-enum Gravity { NONE, DOWN , UP}
+enum Gravity { NONE, DOWN , UP, LEFT, RIGHT}
 Game g; //Only for the purpose of the old test level.
 
 interface Drawable { //An interface that represents a drawable object.
@@ -82,6 +82,14 @@ class Player : Position, Drawable {
       attr_on(color_pair(3));
       mvaddstr(this.getY(),this.getX(),std.string.toStringz("^"));
       attr_off(color_pair(3));
+    } else if(this.gravityDirection == Gravity.LEFT) {
+      attr_on(color_pair(3));
+      mvaddstr(this.getY(),this.getX(),std.string.toStringz("<"));
+      attr_off(color_pair(3));
+    } else if(this.gravityDirection == Gravity.RIGHT) {
+      attr_on(color_pair(3));
+      mvaddstr(this.getY(),this.getX(),std.string.toStringz(">"));
+      attr_off(color_pair(3));
     }
   }
 }
@@ -133,25 +141,37 @@ class InputHandler {
       this.player.setY(this.height - 2);
     }
   }
-  public bool handleInputX() {
+  public bool handleInputPerp() { //Handles input at a  direction perpendicular to gravity
     int u = getch();
     char c = cast(char)u;
     this.prev = c;
-    if(c == 'a') {
-      this.moveLeft();
-    } else if(c == 'd') {
-      this.moveRight();
-    } else if(u == 3) {
-      return false;
-    } else if(!(u == 'w' || u == 's')) {
-      return handleInputX();
+    if(this.getGravityDirection() == Gravity.NONE || this.getGravityDirection() == Gravity.DOWN || this.getGravityDirection() == Gravity.UP) {
+      if(c == 'a') {
+        this.moveLeft();
+      } else if(c == 'd') {
+        this.moveRight();
+      } else if(u == 3) {
+        return false;
+      } else if(!(u == 'w' || u == 's')) {
+        return handleInputPerp();
+      }
+      clear();
+      return true;
+    } else {
+       if(c == 'w') {
+        this.moveUp();
+      } else if(c == 's') {
+        this.moveDown();
+      } else if(u == 3) {
+        return false;
+      } else if(!(u == 'a' || u == 'd')) {
+        return handleInputPerp();
+      }
+      clear();
+      return true;
     }
-    
-    clear(); //Hacky, sort of
-//    this.player.draw();
-    return true;
   }
-  public bool handleInputY() {
+  public bool handleInputPara() {
     if(this.getGravityDirection() == Gravity.NONE) {
       if(this.prev == 'w') {
         this.moveUp();
@@ -170,7 +190,7 @@ class InputHandler {
         this.moveUp();
       }
       return true;
-    } else {
+    } else if(this.getGravityDirection() == Gravity.UP) {
       if(this.prev == '\x03') {
         return false;
       } else if(this.falling) {
@@ -179,6 +199,26 @@ class InputHandler {
         this.moveDown();
       }
       return true;
+    } else if(this.getGravityDirection() == Gravity.LEFT) {
+      if(this.prev == '\x03') {
+        return false;
+      } else if(this.falling) {
+        this.moveLeft();
+      } else if(this.prev == 'd') {
+        this.moveRight();
+      }
+      return true;
+    } else if(this.getGravityDirection() == Gravity.RIGHT) {
+      if(this.prev == '\x03') {
+        return false;
+      } else if(this.falling) {
+        this.moveRight();
+      } else if(this.prev == 'a') {
+        this.moveLeft();
+      }
+      return true;
+    } else {
+      return false; //This should never happen, ever.
     }
   }
 }
@@ -280,7 +320,7 @@ class Game {
     if(this.getGravityDirection() == Gravity.NONE) {
       return false;
     } else if(this.getGravityDirection() == Gravity.DOWN) {
-      if(this.player.getY() == this.getWidth() - 2) {
+      if(this.player.getY() == this.getHeight() - 2) {
         return false;
       } else {
         for(int i = 0;i < this.obstacles.length;i++) {
@@ -295,6 +335,26 @@ class Game {
       } else {
         for(int i = 0;i < this.obstacles.length;i++) {
           if(this.player.getX() == this.obstacles[i].getX() && this.player.getY() - 1 == this.obstacles[i].getY()) {
+            return false;
+          }
+        }
+      }
+    } else if(this.getGravityDirection() == Gravity.LEFT) {
+      if(this.player.getX() == 1) {
+        return false;
+      } else {
+        for(int i = 0;i < this.obstacles.length;i++) {
+          if(this.player.getY() == this.obstacles[i].getY() && this.player.getX() - 1 == this.obstacles[i].getX()) {
+            return false;
+          }
+        }
+      }
+    } else if(this.getGravityDirection() == Gravity.RIGHT) {
+      if(this.player.getX() == this.getWidth() - 2) {
+        return false;
+      } else {
+        for(int i = 0;i < this.obstacles.length;i++) {
+          if(this.player.getY() == this.obstacles[i].getY() && this.player.getX() + 1 == this.obstacles[i].getX()) {
             return false;
           }
         }
@@ -317,14 +377,14 @@ class Game {
     this.drawObstacles();
     this.player.draw();
     this.doGravity();
-    while(this.inputHandler.handleInputX() && this.uncollided()) {
+    while(this.inputHandler.handleInputPerp() && this.uncollided()) {
       this.doGravity();
       this.inputHandler.setFalling(this.shouldFall());
       box(w,0,0);
       this.clearObstacles();
       this.doHints();
 //      if(!this.uncollided()) break;
-      this.inputHandler.handleInputY();
+      this.inputHandler.handleInputPara();
       this.player.draw();
       if(!this.uncollided()) break;
       this.drawObstacles();
@@ -397,7 +457,7 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
   for(int i = 0;i < 17;i++) {
     g.addTurn([new VerticalLaser(1,1)]);
   }
-  g.addTurn([new HorizontalLaser(1,18)],Gravity.UP);
+  g.addTurn([new VerticalLaser(9,1)],Gravity.LEFT);
   g.play();
 }
 
