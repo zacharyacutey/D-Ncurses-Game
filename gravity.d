@@ -452,8 +452,8 @@ class VerticalLaser : Hint {
 
 void main() { //This is my testing for now, I know D has unittest, but I have no idea how to do that with ncurses!
   Player p = new Player(1,1);
-  Game g = new Game(p,20,20);
-  g.addTurn([],Gravity.DOWN);
+  g = new Game(p,20,20);
+/*  g.addTurn([],Gravity.DOWN);
   for(int i = 0;i < 18;i++) {
     g.addTurn([new VerticalLaser(1,18)]);
   }
@@ -469,7 +469,8 @@ void main() { //This is my testing for now, I know D has unittest, but I have no
   for(int i = 0;i < 18;i++) {
     g.addTurn([new VerticalLaser(1,18)]);
   }
-  g.play();
+  g.play();*/
+  oldTest();
 }
 
 
@@ -506,4 +507,5 @@ void oldTest() {
   g.addTurn([new VerticalLaser(1,1)]);
   g.addTurn([new HorizontalLaser(1,4)]);
   g.addTurn([new HorizontalLaser(1,3)]);
+  g.play();
 }
