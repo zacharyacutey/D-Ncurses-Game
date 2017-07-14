@@ -23,7 +23,7 @@ extern(C) {
 	char get_vline();
 }
 
-enum : int { BLACK, RED, GREEN, YELLOW, MAGENTA, CYAN, WHITE }
+enum : int { BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE }
 
 
 
@@ -147,6 +147,4 @@ class Menu(T) {
 		}
 		return this.values[this.keys.find!char(c)];
 	}
-}
-void main() {
 }
